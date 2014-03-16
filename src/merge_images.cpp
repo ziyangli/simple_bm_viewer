@@ -111,8 +111,9 @@ int main(int argc, char** argv)
 #endif
 
         cv::imshow("Left|Disparity|Right Image", m_img);
+        cv::moveWindow("Left|Disparity|Right Image", 100, 100);
         
-        switch (cv::waitKey(key_delay)) // give a positive number to make it auto
+         switch (cv::waitKey(key_delay)) // give a positive number to make it auto
         {
         case 27: // capture 'Esc'
             return 0;
