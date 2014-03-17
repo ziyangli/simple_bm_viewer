@@ -8,8 +8,6 @@
 #include <unistd.h>
 #include <dirent.h>
 
-
-
 int main(int argc, char** argv)
 {
 
@@ -88,13 +86,31 @@ int main(int argc, char** argv)
             return 0;
         }
 
+        // StereoBM
+        cv::Mat disp, disp8;    
+    
+        cv::StereoBM sbm;
+        sbm.state->SADWindowSize = 9;
+        sbm.state->numberOfDisparities = 64;
+        sbm.state->preFilterSize = 9;
+        sbm.state->preFilterCap = 31;
+        sbm.state->minDisparity = 0;
+        sbm.state->textureThreshold = 10;
+        sbm.state->uniquenessRatio = 30;
+        sbm.state->speckleWindowSize = 100;
+        sbm.state->speckleRange = 2;
+        sbm.state->disp12MaxDiff = -1;
+    
+        sbm(imgl, imgr, disp);
+        cv::normalize(disp, disp8, 0, 255, CV_MINMAX, CV_8U);
+
         int width;
         int height;
         
         height = imgl.rows;
         width = imgl.cols;
 
-        cv::Mat m_img(3*height+20, width, CV_8UC1, 255); // merged image
+        cv::Mat m_img(3*height+20, 2*width+10, CV_8UC1, 255); // merged image
                 
         cv::Rect roi = cv::Rect(0, 0, width, height);
         imgl.copyTo(m_img(roi));
@@ -104,6 +120,10 @@ int main(int argc, char** argv)
 
         roi = cv::Rect(0, 2*height+20, width, height);
         imgr.copyTo(m_img(roi));
+        
+        roi = cv::Rect(width+10, height+10, width, height);
+        disp8.copyTo(m_img(roi));
+        
 
 #if 0
         for (int i = 5; i < width; i+=20)
